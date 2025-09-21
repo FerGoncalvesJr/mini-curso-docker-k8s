@@ -109,24 +109,24 @@ kubectl get service laravel-service
 
 ## 📝 Roteiro de Demonstração
 
-### **1. Preparação (5 min)**
+### **1. Preparação**
 - Mostrar a estrutura do projeto
 - Explicar Docker vs Kubernetes
 - Demonstrar os scripts automáticos
 
-### **2. Docker Compose (30 min)**
+### **2. Docker Compose**
 - Executar `./start.sh`
 - Mostrar containers rodando: `docker ps`
 - Acessar aplicação: http://localhost:8000
 - Demonstrar endpoints: `/health`, `/alunos`
 - Mostrar logs: `docker-compose logs -f`
 
-### **3. Customização (15 min)**
+### **3. Customização**
 - Editar `routes/web.php` para adicionar nova rota
 - Mostrar hot reload funcionando
 - Demonstrar persistência de dados
 
-### **4. Docker Hub (20 min)**
+### **4. Docker Hub**
 ```bash
 # Construir e taggear imagem
 docker build -t seu-usuario/mini-curso-laravel:latest ./laravel-app/
@@ -138,19 +138,19 @@ docker login
 docker push seu-usuario/mini-curso-laravel:latest
 ```
 
-### **5. Kubernetes (40 min)**
+### **5. Kubernetes**
 - Executar `./deploy-k8s.sh`
 - Mostrar pods: `kubectl get pods`
 - Mostrar services: `kubectl get services`
 - Acessar aplicação via Kubernetes
 - Demonstrar escalabilidade: `kubectl scale deployment laravel-deployment --replicas=3`
 
-### **6. Monitoramento (10 min)**
+### **6. Monitoramento**
 - Mostrar logs: `kubectl logs -l app=laravel`
 - Demonstrar health checks
 - Mostrar recursos: `kubectl top pods`
 
-### **7. Encerramento (10 min)**
+### **7. Encerramento**
 - Resumir benefícios do Docker
 - Explicar vantagens do Kubernetes
 - Próximos passos e recursos
@@ -234,11 +234,6 @@ kubectl describe service laravel-service
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
 - [Laravel Documentation](https://laravel.com/docs)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-
----
-
-⏱️ **Tempo total estimado:** ~2h30min  
-(sobrando ~30min para dúvidas e pausas)
 
 ---
 
