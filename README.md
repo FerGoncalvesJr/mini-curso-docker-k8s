@@ -5,6 +5,50 @@ usando **Laravel + PostgreSQL**.
 
 ---
 
+## 📋 Pré-requisitos (Instalação)
+
+### **1. Instalar Docker**
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+# Faça logout e login novamente
+
+# Verificar instalação
+docker --version
+docker-compose --version
+```
+
+### **2. Instalar kubectl**
+```bash
+# Ubuntu/Debian
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Verificar instalação
+kubectl version --client
+```
+
+### **3. Instalar Minikube**
+```bash
+# Ubuntu/Debian
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# Verificar instalação
+minikube version
+```
+
+### **4. Instalar Git (se necessário)**
+```bash
+sudo apt install -y git
+```
+
+---
+
 ## 📌 Estrutura do Projeto
 ```
 mini-curso/
@@ -29,14 +73,18 @@ mini-curso/
 
 ## 🚀 Início Rápido
 
-### **Opção 1: Script Automático (Recomendado)**
+### **1. Clonar o Repositório**
+```bash
+git clone https://github.com/SEU_USUARIO/mini-curso-docker-k8s.git
+cd mini-curso-docker-k8s
+```
+
+### **2. Docker Compose (Opção 1: Script Automático)**
 ```bash
 ./start.sh
 ```
 
-### **Opção 2: Comandos Manuais**
-
-#### **1. Subindo Laravel + PostgreSQL com Docker Compose**
+### **3. Docker Compose (Opção 2: Comandos Manuais)**
 ```bash
 # Construir e iniciar os containers
 docker-compose up -d --build
@@ -48,15 +96,10 @@ docker ps
 docker-compose logs -f
 ```
 
-#### **2. Acessando a Aplicação**
+### **4. Acessando a Aplicação**
 - **Laravel**: http://localhost:8000
 - **Health Check**: http://localhost:8000/health
 - **API Alunos**: http://localhost:8000/alunos
-
-#### **3. Executando Migrations (se necessário)**
-```bash
-docker exec mini-curso-laravel-app php artisan migrate --force
-```
 
 ---
 
@@ -64,6 +107,10 @@ docker exec mini-curso-laravel-app php artisan migrate --force
 
 ### **Opção 1: Script Automático**
 ```bash
+# Iniciar cluster Kubernetes
+minikube start
+
+# Deploy automático
 ./deploy-k8s.sh
 ```
 
@@ -71,11 +118,18 @@ docker exec mini-curso-laravel-app php artisan migrate --force
 
 #### **1. Preparação**
 ```bash
+# Iniciar cluster Kubernetes
+minikube start
+
+# Verificar cluster
+kubectl cluster-info
+kubectl get nodes
+
 # Construir a imagem Docker
 docker build -t mini-curso-laravel:latest ./laravel-app/
 
-# Verificar se o cluster está rodando
-kubectl cluster-info
+# Carregar imagem no Minikube
+minikube image load mini-curso-laravel:latest
 ```
 
 #### **2. Deploy no Kubernetes**
@@ -86,33 +140,30 @@ kubectl apply -f k8s/
 # Verificar status
 kubectl get pods
 kubectl get services
+kubectl get deployments
 ```
 
 #### **3. Acessando a Aplicação**
 
-**Minikube:**
+**Via Port Forward:**
 ```bash
-minikube service laravel-service
+kubectl port-forward service/laravel-service 8080:8000
+# Acesse: http://localhost:8080
 ```
 
-**Kind ou outros clusters:**
+**Via Minikube Service:**
 ```bash
-kubectl port-forward service/laravel-service 8000:8000
-```
-
-**Verificar IP externo:**
-```bash
-kubectl get service laravel-service
+minikube service laravel-service --url
 ```
 
 ---
 
-## 📝 Roteiro de Demonstração
+## 📝 Roteiro de Demonstração (2h30min)
 
 ### **1. Preparação**
-- Mostrar a estrutura do projeto
+- Verificar instalações: `docker --version`, `kubectl version --client`, `minikube version`
+- Mostrar estrutura do projeto
 - Explicar Docker vs Kubernetes
-- Demonstrar os scripts automáticos
 
 ### **2. Docker Compose**
 - Executar `./start.sh`
@@ -122,35 +173,24 @@ kubectl get service laravel-service
 - Mostrar logs: `docker-compose logs -f`
 
 ### **3. Customização**
-- Editar `routes/web.php` para adicionar nova rota
+- Editar `laravel-app/public/index.php` para adicionar nova rota
 - Mostrar hot reload funcionando
 - Demonstrar persistência de dados
 
-### **4. Docker Hub**
-```bash
-# Construir e taggear imagem
-docker build -t seu-usuario/mini-curso-laravel:latest ./laravel-app/
-
-# Fazer login no Docker Hub
-docker login
-
-# Push da imagem
-docker push seu-usuario/mini-curso-laravel:latest
-```
-
-### **5. Kubernetes**
+### **4. Kubernetes**
+- Executar `minikube start`
 - Executar `./deploy-k8s.sh`
 - Mostrar pods: `kubectl get pods`
 - Mostrar services: `kubectl get services`
 - Acessar aplicação via Kubernetes
 - Demonstrar escalabilidade: `kubectl scale deployment laravel-deployment --replicas=3`
 
-### **6. Monitoramento**
+### **5. Monitoramento**
 - Mostrar logs: `kubectl logs -l app=laravel`
 - Demonstrar health checks
 - Mostrar recursos: `kubectl top pods`
 
-### **7. Encerramento**
+### **6. Encerramento**
 - Resumir benefícios do Docker
 - Explicar vantagens do Kubernetes
 - Próximos passos e recursos
@@ -195,7 +235,10 @@ kubectl scale deployment laravel-deployment --replicas=3
 kubectl delete -f k8s/
 
 # Port forward
-kubectl port-forward service/laravel-service 8000:8000
+kubectl port-forward service/laravel-service 8080:8000
+
+# Parar cluster
+minikube stop
 ```
 
 ---
@@ -204,27 +247,64 @@ kubectl port-forward service/laravel-service 8000:8000
 
 ### **Problemas Comuns**
 
-**1. Container não inicia:**
+**1. Docker não inicia:**
+```bash
+sudo systemctl restart docker
+sudo usermod -aG docker $USER
+# Faça logout e login novamente
+```
+
+**2. Container não inicia:**
 ```bash
 docker-compose logs app
 ```
 
-**2. Banco não conecta:**
+**3. Minikube não inicia:**
 ```bash
-docker-compose logs db
+minikube delete
+minikube start
 ```
 
-**3. Pod não fica Ready:**
+**4. Pod não fica Ready:**
 ```bash
 kubectl describe pod <pod-name>
 kubectl logs <pod-name>
 ```
 
-**4. Service não acessível:**
+**5. Imagem não encontrada:**
 ```bash
-kubectl get endpoints
-kubectl describe service laravel-service
+minikube image load mini-curso-laravel:latest
 ```
+
+**6. Porta ocupada:**
+```bash
+lsof -i :8000
+kubectl port-forward service/laravel-service 8080:8000
+```
+
+### **Limpeza Completa**
+```bash
+# Parar tudo
+docker-compose down
+kubectl delete -f k8s/
+minikube stop
+
+# Limpar imagens
+docker system prune -a
+
+# Resetar Minikube
+minikube delete
+minikube start
+```
+
+---
+
+## 📚 URLs Importantes
+
+- **Docker Compose**: http://localhost:8000
+- **Kubernetes**: http://localhost:8080 (port-forward)
+- **Health Check**: http://localhost:8000/health
+- **API Alunos**: http://localhost:8000/alunos
 
 ---
 

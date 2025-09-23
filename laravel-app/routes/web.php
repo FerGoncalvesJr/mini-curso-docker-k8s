@@ -7,7 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/alunos', function () {
-    return ['João', 'Maria', 'Pedro', 'Ana', 'Carlos'];
+    return ['Joao', 'Maria', 'Pedro', 'Ana', 'Carlos'];
 });
 
 Route::get('/health', function () {

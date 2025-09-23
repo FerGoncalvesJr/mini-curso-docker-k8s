@@ -138,7 +138,7 @@ switch ($path) {
         
     case '/alunos':
         header('Content-Type: application/json');
-        echo json_encode(['João', 'Maria', 'Pedro', 'Ana', 'Carlos']);
+        echo json_encode(['Joao', 'Maria', 'Pedro', 'Ana', 'Carlos']);
         break;
         
     case '/health':
